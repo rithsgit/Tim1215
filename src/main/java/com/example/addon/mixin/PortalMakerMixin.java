@@ -2,17 +2,17 @@ package com.example.addon.mixin;
 
 import com.example.addon.modules.PortalMaker;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,7 +36,7 @@ public abstract class PortalMakerMixin {
         BlockPos clickedPos = context.getBlockPos();
         BlockPos firePos = clickedPos.offset(context.getSide());
 
-        // Only proceed if we're trying to place fire inside what should be portal interior space
+        // Only proceed if placing fire inside designated portal frame space
         boolean isPortalRelated = portalMaker.portalFramePositions.stream()
             .anyMatch(framePos -> {
                 BlockPos up1 = framePos.up(1);
@@ -54,16 +54,16 @@ public abstract class PortalMakerMixin {
 
         BlockState currentState = world.getBlockState(firePos);
 
-        // Only place fire if the spot is air or replaceable (grass, vines, etc.)
+        // Only place fire if the target position is air or replaceable
         if (!currentState.isAir() && !currentState.isReplaceable()) {
             return;
         }
 
         // Place the fire block
         BlockState fireState = Blocks.FIRE.getDefaultState();
-        world.setBlockState(firePos, fireState, 11); // 11 = notify neighbors + send to clients
+        world.setBlockState(firePos, fireState, 11);
 
-        // Play flint & steel sound for feedback (client + server)
+        // Play flint & steel sound feedback
         world.playSound(
             context.getPlayer(),
             firePos,
@@ -73,14 +73,12 @@ public abstract class PortalMakerMixin {
             world.getRandom().nextFloat() * 0.4F + 0.8F
         );
 
-        // Only damage the item on the server (prevents double-damage desync)
-        if (!world.isClient && context.getPlayer() != null) {
+        // Item damage logic for server-side execution
+        if (!world.isClient() && context.getPlayer() != null) {
             EquipmentSlot slot = context.getHand() == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
             context.getStack().damage(1, context.getPlayer(), slot);
         }
 
-        // Mark as success and cancel vanilla logic
         cir.setReturnValue(ActionResult.SUCCESS);
-        cir.cancel();
     }
 }

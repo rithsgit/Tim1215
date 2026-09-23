@@ -1,11 +1,9 @@
 package com.example.addon.mixin;
 
+import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.minecraft.client.MinecraftClient;
-
 @Mixin(MinecraftClient.class)
-public class LootLensMixin {
+public abstract class LootLensMixin {
     // Placeholder mixin for LootLens
-    // Add specific mixin functionality here if needed
 }

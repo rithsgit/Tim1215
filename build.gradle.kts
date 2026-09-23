@@ -17,6 +17,10 @@ repositories {
         name = "meteor-maven-snapshots"
         url = uri("https://maven.meteordev.org/snapshots")
     }
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+    }
 }
 
 dependencies {
@@ -27,6 +31,10 @@ dependencies {
 
     // Meteor
     modImplementation(libs.meteor.client)
+
+    // Baritone (API jar for MC 1.21.5)
+    // Replace the local jar filename with your updated 1.21.5 compatible build
+    modCompileOnly(files("libs/baritone-api-fabric-1.13.1.jar"))
 }
 
 tasks {

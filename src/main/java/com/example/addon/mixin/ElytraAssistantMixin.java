@@ -14,13 +14,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class ElytraAssistantMixin {
+public abstract class ElytraAssistantMixin {
     @Inject(method = "interactItem", at = @At("HEAD"), cancellable = true)
     private void onInteractItem(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (player == null || hand == null) return;
+
         ItemStack stack = player.getStackInHand(hand);
         if (stack.isOf(Items.FIREWORK_ROCKET)) {
             ElytraAssistant module = Modules.get().get(ElytraAssistant.class);
-            if (module != null && module.shouldPreventRocketUse()) {
+            if (module != null && module.isActive() && module.shouldPreventRocketUse()) {
                 cir.setReturnValue(ActionResult.FAIL);
             }
         }

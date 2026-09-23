@@ -14,7 +14,16 @@ public class PortalMakerCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.executes(context -> {
-            Modules.get().get(PortalMaker.class).toggle();
+            PortalMaker module = Modules.get().get(PortalMaker.class);
+
+            if (module == null) {
+                error("PortalMaker module not found.");
+                return SINGLE_SUCCESS;
+            }
+
+            module.toggle();
+            info("Portal Maker is now %s.", module.isActive() ? "§aenabled§r" : "§cdisabled§r");
+
             return SINGLE_SUCCESS;
         });
     }

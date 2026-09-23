@@ -13,15 +13,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
-public class ElytraAssistantSwingMixin {
+public abstract class ElytraAssistantSwingMixin {
     @Inject(method = "swingHand", at = @At("HEAD"), cancellable = true)
     private void onSwingHand(Hand hand, CallbackInfo ci) {
+        if (hand == null) return;
+
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
         ItemStack stack = player.getStackInHand(hand);
         if (stack.isOf(Items.FIREWORK_ROCKET)) {
             // Check ElytraAssistant (for middle-click rockets)
             ElytraAssistant ea = Modules.get().get(ElytraAssistant.class);
-            if (ea != null && ea.shouldSilentRocket()) {
+            if (ea != null && ea.isActive() && ea.shouldSilentRocket()) {
                 ci.cancel();
                 return;
             }
