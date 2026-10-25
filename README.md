@@ -30,6 +30,7 @@ Modules List;
 - Safety Net
 - Server Healthcare System
 - Sign Scanner
+- Skipper
 - Third Sight
 - Time Throttle
 - Total Disposal
